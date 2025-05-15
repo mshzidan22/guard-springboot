@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" /> <!-- optional -->
+</head>
+<body>
+
+<header>
+    <h1>Welcome to Our Web App</h1>
+    <div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<main>
+    <p>Hello <b th:text="${#authentication.name}">User</b>!</p>
+
+    <p>Your roles:</p>
+    <ul>
+        <li th:each="role : ${#authentication.authorities}" th:text="${role.authority}"></li>
+    </ul>
+</main>
+
+</body>
+</html>

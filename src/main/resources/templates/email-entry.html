@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Request OTP</title>
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" th:href="@{/css/email-entry.css}" />
+    <!-- Basic styling for the error message -->
+    <style>
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container"> <!-- Added a container for basic centering/layout -->
+    <h2>Login with Email</h2>
+
+    <!-- Display Error Message if present in the model -->
+    <div th:if="${param.error}" class="error-message">Invalid Email.</div>
+
+    <form th:action="@{/login/email/send-otp}" method="post">
+        <input type="email" name="email" placeholder="Enter your email" required />
+        <button type="submit">Send OTP</button>
+    </form>
+
+    <!-- Optional: Link back to the main login page -->
+    <p><a th:href="@{/login}">Back to Login Options</a></p>
+
+</div>
+
+</body>
+</html>

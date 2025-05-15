@@ -1,0 +1,47 @@
+<!-- templates/otp-email.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OTP LOGIN CODE </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .otp {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c7be5;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Please use the verification code below to sign in.
+    </h2>
+    <p>Please use the verification code below to sign in.</p>
+    <div class="otp" th:text="${otp}">000000</div>
+    <p>If you didn’t request this, you can ignore this email.</p>
+    <div class="footer">
+        &copy; 2025 mshzidan. All rights reserved.
+    </div>
+</div>
+</body>
+</html>

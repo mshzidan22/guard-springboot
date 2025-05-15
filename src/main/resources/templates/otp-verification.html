@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Verify OTP
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600"
+         th:text="'Please enter the verification code sent to your '
+             + (${otpType == 'EMAIL'} ? 'email address' : 'phone number')
+             + ' at '
+             + ${recipient}">
+        Please enter the verification code sent to your [email/phone] at [recipient].
+      </p>
+    </div>
+
+    <div th:if="${param.error}" class="rounded-md bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <!-- SVG for error icon -->
+          <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            Invalid OTP. Please try again.
+          </h3>
+        </div>
+      </div>
+    </div>
+
+    <form class="mt-8 space-y-6" th:action="@{/login/validate-otp}" method="POST">
+      <input type="hidden" name="_csrf" th:value="${_csrf != null ? _csrf.token : ''}">
+      <input type="hidden" name="recipient" th:value="${recipient}">
+      <div class="rounded-md shadow-sm">
+        <div>
+          <label for="otp" class="sr-only">OTP Code</label>
+          <input id="otp" name="otp" type="text" required
+                 class="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300
+                            placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500
+                            focus:border-indigo-500 focus:z-10 sm:text-sm"
+                 placeholder="Enter 6-digit OTP"
+                 pattern="[0-9]{6}"
+                 maxlength="6"
+                 autofocus>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div class="text-sm">
+          <a href="/login/email" class="font-medium text-indigo-600 hover:text-indigo-500">
+            Use different email?
+          </a>
+        </div>
+        <div class="text-sm">
+          <a href="#" id="resendOtp" class="font-medium text-indigo-600 hover:text-indigo-500">
+            Resend OTP
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit"
+                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm
+                        font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <!-- SVG for lock icon -->
+                            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+          Verify OTP
+        </button>
+      </div>
+    </form>
+
+    <div class="mt-4">
+      <p class="text-center text-xs text-gray-500">
+        <span id="timer" class="font-medium">05:00</span> remaining to enter OTP
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Countdown timer for OTP expiration
+  document.addEventListener('DOMContentLoaded', function() {
+      let timeLeft = 300; // 5 minutes in seconds
+      const timerElement = document.getElementById('timer');
+
+      const countdownTimer = setInterval(function() {
+          const minutes = Math.floor(timeLeft / 60);
+          let seconds = timeLeft % 60;
+          seconds = seconds < 10 ? '0' + seconds : seconds;
+
+          timerElement.textContent = `${minutes}:${seconds}`;
+
+          if (timeLeft <= 0) {
+              clearInterval(countdownTimer);
+              timerElement.textContent = '0:00';
+              timerElement.classList.add('text-red-600');
+              document.getElementById('otp').disabled = true;
+              alert('OTP has expired. Please request a new one.');
+          }
+
+          timeLeft--;
+      }, 1000);
+
+      // Handle resend OTP
+      document.getElementById('resendOtp').addEventListener('click', function(e) {
+          e.preventDefault();
+          // Here you would typically make an AJAX call to resend OTP
+          // For now, just reset the timer
+          clearInterval(countdownTimer);
+          timeLeft = 300;
+          timerElement.textContent = '5:00';
+          timerElement.classList.remove('text-red-600');
+          document.getElementById('otp').disabled = false;
+          document.getElementById('otp').value = '';
+          document.getElementById('otp').focus();
+
+          // Start countdown again
+          countdownTimer = setInterval(function() {
+              const minutes = Math.floor(timeLeft / 60);
+              let seconds = timeLeft % 60;
+              seconds = seconds < 10 ? '0' + seconds : seconds;
+
+              timerElement.textContent = `${minutes}:${seconds}`;
+
+              if (timeLeft <= 0) {
+                  clearInterval(countdownTimer);
+                  timerElement.textContent = '0:00';
+                  timerElement.classList.add('text-red-600');
+                  document.getElementById('otp').disabled = true;
+                  alert('OTP has expired. Please request a new one.');
+              }
+
+              timeLeft--;
+          }, 1000);
+
+          alert('New OTP sent to your email!');
+      });
+  });
+</script>
+</body>
+</html>
