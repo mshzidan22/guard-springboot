@@ -1,8 +1,8 @@
 🛡️ Guard
-Spring boot app that uses most common features of Spring security.
-This app uses session based authentication.
+Spring Boot app that uses the most common features of Spring Security.
+This app uses session-based authentication.
 
-![Uploading Guard Project.png…]()
+![Guard Project](https://github.com/user-attachments/assets/de21b516-d4b6-43fb-935f-14ffdf09ae75)
 
 
 ✨ Features
